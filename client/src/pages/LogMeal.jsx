@@ -30,7 +30,6 @@ const LogMeal = () => {
       if (response.success && response.foods.length > 0) {
         setRecognizedFoods(response.foods);
 
-        // ⬇️ AUTO-ADD DETECTED FOODS (the missing piece)
         const autoAdded = response.foods.map(f => ({
           ...f,
           portion: 1,
@@ -135,7 +134,7 @@ const LogMeal = () => {
   );
 
   // ----------------------------------------------------------
-  // SAVE MEAL (FIXED)
+  // SAVE MEAL
   // ----------------------------------------------------------
   const saveMeal = async () => {
     if (selectedFoods.length === 0) return toast.error('Add at least one food item');
@@ -148,8 +147,6 @@ const LogMeal = () => {
         mealType,
         totals,
         timestamp: new Date(),
-
-        // ⬇️ REQUIRED FOR STREAKS + BADGES + dashboard icon
         hasPhoto: recognizedFoods.length > 0,
       });
 
@@ -182,7 +179,8 @@ const LogMeal = () => {
         </div>
       </div>
 
-      <div className="container-custom py-6 space-y-6">
+      {/* MAIN CONTENT */}
+      <div className="container-custom mt-6 space-y-6">
 
         {/* MEAL TYPE */}
         <div className="card">
@@ -206,6 +204,8 @@ const LogMeal = () => {
 
         {/* INPUT METHODS */}
         <div className="grid md:grid-cols-2 gap-4">
+
+          {/* CAMERA BUTTON */}
           <button
             onClick={() => setShowCamera(true)}
             className="card flex flex-col items-center py-8 bg-gradient-primary text-white hover:shadow-lg"
@@ -214,6 +214,7 @@ const LogMeal = () => {
             <span className="text-lg font-semibold mt-3">Take Photo</span>
           </button>
 
+          {/* SEARCH */}
           <div className="card bg-gradient-secondary text-white">
             <div className="flex flex-col justify-center h-full">
               <Search size={48} className="mx-auto mb-3" />
@@ -250,7 +251,6 @@ const LogMeal = () => {
         {!isProcessing && recognizedFoods.length > 0 && (
           <div className="card">
             <h3 className="text-lg font-semibold mb-4">Found Foods</h3>
-
             <div className="space-y-3">
               {recognizedFoods.map((food, index) => (
                 <div
@@ -263,7 +263,6 @@ const LogMeal = () => {
                       {food.calories} cal • {food.protein}g protein
                     </p>
                   </div>
-
                   <button
                     onClick={() => addFoodToMeal(food)}
                     className="p-2 bg-primary text-white rounded-full hover:bg-red-600"

@@ -1,8 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Camera, History, User, TrendingUp } from 'lucide-react';
+import { Home, Camera, History, User, TrendingUp, LogIn, LogOut } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
   const location = useLocation();
+  const { user, logout } = useAuth();
+
+  // Hide navbar on login/signup pages
+  if (location.pathname === '/login' || location.pathname === '/signup') {
+    return null;
+  }
 
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
@@ -13,6 +20,12 @@ const Navbar = () => {
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = async () => {
+    if (confirm('Are you sure you want to logout?')) {
+      await logout();
+    }
+  };
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-40">
@@ -27,14 +40,14 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {navItems.map((item) => {
-              const Icon = item.icon;
+              const Icon = item.icon
               return (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
                     isActive(item.path)
-                      ? 'bg-primary text-white'
+                      ? 'bg-primary text-black'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
@@ -43,6 +56,25 @@ const Navbar = () => {
                 </Link>
               );
             })}
+
+            {/* Auth Button */}
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+              >
+                <LogOut size={20} />
+                <span className="font-medium">Logout</span>
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-black rounded-lg hover:bg-red-600 transition"
+              >
+                <LogIn size={20} />
+                <span className="font-medium">Login</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

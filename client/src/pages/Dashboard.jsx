@@ -122,7 +122,7 @@ const Dashboard = () => {
 
         {/* Streak Badge */}
         {streak.current > 0 && (
-          <div className="card bg-gradient-to-r from-orange-500 to-red-500 text-white">
+          <div className="card bg-gradient-to-r from-orange-500 to-red-500 text-black">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="text-5xl">🔥</div>
