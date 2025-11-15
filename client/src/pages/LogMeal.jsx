@@ -29,6 +29,19 @@ const LogMeal = () => {
 
       if (response.success && response.foods.length > 0) {
         setRecognizedFoods(response.foods);
+
+        // ⬇️ AUTO-ADD DETECTED FOODS (the missing piece)
+        const autoAdded = response.foods.map(f => ({
+          ...f,
+          portion: 1,
+          calories: Math.round(f.calories),
+          protein: Math.round(f.protein),
+          carbs: Math.round(f.carbs),
+          fats: Math.round(f.fats),
+        }));
+
+        setSelectedFoods(autoAdded);
+
         toast.success(`Found ${response.foods.length} food items!`);
       } else {
         toast.error('No food detected. Try manual search.');
@@ -38,6 +51,7 @@ const LogMeal = () => {
       toast.error('Failed to recognize food.');
     } finally {
       setIsProcessing(false);
+      setShowCamera(false);
     }
   };
 
@@ -49,7 +63,7 @@ const LogMeal = () => {
 
     setIsProcessing(true);
     try {
-      const { results } = await searchFood(searchQuery); // FIXED
+      const { results } = await searchFood(searchQuery);
       setRecognizedFoods(results || []);
       toast.success('Food found!');
     } catch (error) {
@@ -85,7 +99,7 @@ const LogMeal = () => {
   };
 
   // ----------------------------------------------------------
-  // UPDATE PORTION (FULLY FIXED)
+  // UPDATE PORTION
   // ----------------------------------------------------------
   const updatePortion = (index, newPortion) => {
     const foods = [...selectedFoods];
@@ -121,18 +135,22 @@ const LogMeal = () => {
   );
 
   // ----------------------------------------------------------
-  // SAVE MEAL
+  // SAVE MEAL (FIXED)
   // ----------------------------------------------------------
   const saveMeal = async () => {
     if (selectedFoods.length === 0) return toast.error('Add at least one food item');
 
     setIsProcessing(true);
+
     try {
       await saveMealToFirestore({
         foods: selectedFoods,
         mealType,
         totals,
         timestamp: new Date(),
+
+        // ⬇️ REQUIRED FOR STREAKS + BADGES + dashboard icon
+        hasPhoto: recognizedFoods.length > 0,
       });
 
       toast.success('Meal logged!');
@@ -147,7 +165,7 @@ const LogMeal = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
-      
+
       {/* CAMERA */}
       {showCamera && (
         <CameraCapture
@@ -208,7 +226,7 @@ const LogMeal = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // FIXED
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="e.g., chicken breast"
                   className="flex-1 px-4 py-2 rounded-lg text-gray-800"
                 />

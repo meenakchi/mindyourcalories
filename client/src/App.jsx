@@ -10,7 +10,7 @@ import Profile from './pages/Profile';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -19,14 +19,11 @@ function App() {
           <Route path="/history" element={<History />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
-        <Toaster 
+        <Toaster
           position="top-right"
           toastOptions={{
             duration: 3000,
-            style: {
-              background: '#333',
-              color: '#fff',
-            },
+            style: { background: '#333', color: '#fff' },
           }}
         />
       </div>

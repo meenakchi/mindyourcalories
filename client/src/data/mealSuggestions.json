@@ -1,0 +1,150 @@
+{
+  "breakfast": [
+    {
+      "name": "Protein Oatmeal",
+      "foods": [
+        "oatmeal",
+        "greek_yogurt",
+        "berries"
+      ],
+      "calories": 320,
+      "protein": 18,
+      "carbs": 45,
+      "fats": 5
+    },
+    {
+      "name": "Egg Breakfast",
+      "foods": [
+        "eggs",
+        "bread",
+        "banana"
+      ],
+      "calories": 450,
+      "protein": 18,
+      "carbs": 55,
+      "fats": 14
+    },
+    {
+      "name": "Yogurt Parfait",
+      "foods": [
+        "greek_yogurt",
+        "berries",
+        "almonds"
+      ],
+      "calories": 280,
+      "protein": 15,
+      "carbs": 25,
+      "fats": 12
+    }
+  ],
+  "lunch": [
+    {
+      "name": "Chicken & Rice",
+      "foods": [
+        "chicken_breast",
+        "brown_rice",
+        "broccoli"
+      ],
+      "calories": 420,
+      "protein": 42,
+      "carbs": 35,
+      "fats": 6
+    },
+    {
+      "name": "Salmon Bowl",
+      "foods": [
+        "salmon",
+        "white_rice",
+        "spinach"
+      ],
+      "calories": 480,
+      "protein": 32,
+      "carbs": 45,
+      "fats": 15
+    },
+    {
+      "name": "Protein Salad",
+      "foods": [
+        "chicken_breast",
+        "salad",
+        "tomatoes"
+      ],
+      "calories": 250,
+      "protein": 35,
+      "carbs": 10,
+      "fats": 5
+    }
+  ],
+  "dinner": [
+    {
+      "name": "Grilled Chicken Dinner",
+      "foods": [
+        "chicken_breast",
+        "pasta",
+        "vegetables"
+      ],
+      "calories": 520,
+      "protein": 45,
+      "carbs": 48,
+      "fats": 10
+    },
+    {
+      "name": "Salmon Dinner",
+      "foods": [
+        "salmon",
+        "brown_rice",
+        "broccoli"
+      ],
+      "calories": 550,
+      "protein": 35,
+      "carbs": 45,
+      "fats": 18
+    },
+    {
+      "name": "Tofu Stir Fry",
+      "foods": [
+        "tofu",
+        "white_rice",
+        "mixed_vegetables"
+      ],
+      "calories": 380,
+      "protein": 18,
+      "carbs": 52,
+      "fats": 8
+    }
+  ],
+  "snacks": [
+    {
+      "name": "Protein Snack",
+      "foods": [
+        "protein_bar"
+      ],
+      "calories": 200,
+      "protein": 20,
+      "carbs": 18,
+      "fats": 7
+    },
+    {
+      "name": "Fruit & Nuts",
+      "foods": [
+        "apple",
+        "almonds"
+      ],
+      "calories": 230,
+      "protein": 6,
+      "carbs": 22,
+      "fats": 14
+    },
+    {
+      "name": "Yogurt Snack",
+      "foods": [
+        "greek_yogurt",
+        "berries"
+      ],
+      "calories": 120,
+      "protein": 11,
+      "carbs": 18,
+      "fats": 0
+    }
+  ]
+}

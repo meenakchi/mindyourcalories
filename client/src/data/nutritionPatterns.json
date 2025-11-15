@@ -1,0 +1,14 @@
+{
+  "mealTypes": {
+    "lunch": 2487,
+    "breakfast": 2559,
+    "snack": 2451,
+    "dinner": 2503
+  },
+  "avgCaloriesByMeal": {
+    "lunch": 331,
+    "breakfast": 328,
+    "snack": 321,
+    "dinner": 330
+  }
+}

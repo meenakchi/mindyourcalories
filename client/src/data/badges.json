@@ -1,0 +1,90 @@
+[
+  {
+    "id": "first-log",
+    "name": "Getting Started",
+    "description": "Log your first meal",
+    "icon": "🎯",
+    "requirement": {
+      "type": "meals_logged",
+      "value": 1
+    },
+    "rarity": "common"
+  },
+  {
+    "id": "week-streak",
+    "name": "Week Warrior",
+    "description": "Log meals for 7 days straight",
+    "icon": "🔥",
+    "requirement": {
+      "type": "streak_days",
+      "value": 7
+    },
+    "rarity": "uncommon"
+  },
+  {
+    "id": "month-streak",
+    "name": "Consistency Champion",
+    "description": "Log meals for 30 days straight",
+    "icon": "👑",
+    "requirement": {
+      "type": "streak_days",
+      "value": 30
+    },
+    "rarity": "rare"
+  },
+  {
+    "id": "photo-pro",
+    "name": "Photo Pro",
+    "description": "Log 50 meals with photos",
+    "icon": "📸",
+    "requirement": {
+      "type": "photo_logs",
+      "value": 50
+    },
+    "rarity": "uncommon"
+  },
+  {
+    "id": "goal-keeper",
+    "name": "Goal Keeper",
+    "description": "Stay within calorie goal for 10 days",
+    "icon": "🎯",
+    "requirement": {
+      "type": "goal_days",
+      "value": 10
+    },
+    "rarity": "rare"
+  },
+  {
+    "id": "protein-lover",
+    "name": "Protein Lover",
+    "description": "Consume 100g+ protein in a day",
+    "icon": "💪",
+    "requirement": {
+      "type": "protein_day",
+      "value": 100
+    },
+    "rarity": "uncommon"
+  },
+  {
+    "id": "early-bird",
+    "name": "Early Bird",
+    "description": "Log breakfast before 8am for 5 days",
+    "icon": "🌅",
+    "requirement": {
+      "type": "early_breakfast",
+      "value": 5
+    },
+    "rarity": "common"
+  },
+  {
+    "id": "health-guru",
+    "name": "Health Guru",
+    "description": "Log 100 total meals",
+    "icon": "⭐",
+    "requirement": {
+      "type": "meals_logged",
+      "value": 100
+    },
+    "rarity": "legendary"
+  }
+]

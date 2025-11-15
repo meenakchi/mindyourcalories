@@ -1,98 +1,65 @@
-import { Link } from 'react-router-dom';
-import { Camera, TrendingUp, Zap, Award } from 'lucide-react';
-import Button from '../components/common/Button';
+import { Camera, TrendingUp, Zap } from 'lucide-react';
+
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-teal-50">
-      {/* Hero Section */}
-      <div className="container-custom py-20 text-center">
-        <div className="animate-fade-in">
-          <span className="text-6xl mb-6 block">🍽️</span>
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Welcome to <span className="text-primary">CalorieSnap</span>
+    <div className="flex flex-col min-h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col items-center justify-center w-full px-4">
+        {/* Hero Section */}
+        <section className="flex flex-col items-center justify-center text-center max-w-6xl w-full gap-8">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
+            Welcome to <span className="text-[#FF6B6B]">CalorieSnap🍽️</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Track your calories effortlessly with AI-powered food recognition.
-            Snap a photo, get instant nutrition data, and achieve your health goals.
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl">
+            Track your calories effortlessly with AI-powered food recognition. Snap a photo, get instant nutrition data, and achieve your health goals.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Link to="/log-meal">
-              <Button className="text-lg px-8 py-4">
-                <Camera size={24} />
-                Start Logging
-              </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button variant="outline" className="text-lg px-8 py-4">
-                View Dashboard
-              </Button>
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-full sm:w-auto">
+            <button className="bg-red-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-600 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
+              <Camera size={24} /> Start Logging
+            </button>
+            <button className="bg-white text-gray-800 px-8 py-4 rounded-lg text-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all w-full sm:w-auto">
+              View Dashboard
+            </button>
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Features */}
-      <div className="container-custom py-20">
-        <h2 className="text-3xl font-bold text-center mb-12">
-          Why Choose CalorieSnap?
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: Camera,
-              title: 'Instant Recognition',
-              description: 'Snap a photo and our AI identifies food items in seconds',
-              color: 'text-primary'
-            },
-            {
-              icon: TrendingUp,
-              title: 'Track Progress',
-              description: 'Monitor your daily intake with beautiful charts and insights',
-              color: 'text-secondary'
-            },
-            {
-              icon: Zap,
-              title: 'Lightning Fast',
-              description: 'Log meals in 10 seconds instead of 2 minutes of manual entry',
-              color: 'text-accent'
-            }
-          ].map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <div
-                key={index}
-                className="card text-center hover:shadow-xl transition-all hover:-translate-y-1"
-              >
-                <div className={`inline-block p-4 rounded-full bg-gray-100 mb-4 ${feature.color}`}>
-                  <Icon size={32} />
+
+        {/* Features Section */}
+        <section className="w-full flex justify-center px-4 mt-20">
+          <div className="max-w-6xl w-full grid md:grid-cols-3 gap-8">
+            {[
+              { icon: Camera, title: 'Instant Recognition', description: 'Snap a photo and our AI identifies food items in seconds.' },
+              { icon: TrendingUp, title: 'Track Progress', description: 'Monitor your daily intake with beautiful charts and insights.' },
+              { icon: Zap, title: 'Lightning Fast', description: 'Log meals in 10 seconds instead of 2 minutes of manual entry.' },
+            ].map((feature, i) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={i}
+                  className="bg-white rounded-xl p-8 text-center hover:shadow-xl transition-all hover:-translate-y-1 shadow-md"
+                >
+                  <div className="inline-block p-4 rounded-full bg-gray-100 mb-4">
+                    <Icon size={32} className="text-gray-700" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+              );
+            })}
+          </div>
+        </section>
+      </main>
 
-      {/* CTA */}
-      <div className="bg-gradient-primary text-white py-20">
-        <div className="container-custom text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to Start Your Journey?
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join thousands of users achieving their health goals
-          </p>
-          <Link to="/log-meal">
-            <Button variant="secondary" className="text-lg px-8 py-4">
-              Get Started Free
-            </Button>
-          </Link>
+
+      {/* Footer */}
+      <footer className="w-full bg-gradient-to-r from-red-400 via-red-500 to-pink-500 text-white py-6 flex justify-center">
+        <div className="max-w-5xl w-full text-center px-8 space-y-10">
+          <h2 className="text-5xl font-bold mb-4">Ready to Start Your Journey?</h2>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
+
 
 export default Home;

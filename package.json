@@ -4,12 +4,14 @@
   "description": "",
   "license": "ISC",
   "author": "meena",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "cloudinary": "^2.8.0"
+    "cloudinary": "^2.8.0",
+    "csv-parser": "^3.2.0",
+    "strip-bom-stream": "^5.0.0"
   }
 }
