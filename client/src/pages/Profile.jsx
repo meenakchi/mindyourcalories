@@ -49,7 +49,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-400 via-red-500 to-pink-500 text-white">
+      <div className="bg-gradient-primary text-white">
         <div className="container-custom p-10">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-4xl">
@@ -172,14 +172,18 @@ const Profile = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
-              <div className="flex gap-2">
-                <Button onClick={handleSaveGoals} isLoading={isSaving}>
-                  Save Changes
-                </Button>
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancel
-                </Button>
-              </div>
+              <div className="flex gap-2 mt-4">
+  <Button 
+    onClick={handleSaveGoals} 
+    isLoading={isSaving}
+    className="bg-green-600 hover:bg-green-700 text-white"
+  >
+    Save Changes
+  </Button>
+  <Button variant="outline" onClick={() => setIsEditing(false)}>
+    Cancel
+  </Button>
+</div>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">

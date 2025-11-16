@@ -16,6 +16,7 @@ import {
 import { db } from './config';
 import { getAuth } from 'firebase/auth';
 
+
 // ================== MEALS ==================
 
 // Save meal
@@ -141,7 +142,11 @@ export const getAllUserMeals = async (limitCount = 100) => {
     const auth = getAuth();
     const user = auth.currentUser;
 
-    if (!user) return [];
+    if (!user) {
+      // Guest mode - get from localStorage
+      console.warn('⚠️ No user logged in, loading from localStorage');
+      return getAllMealsFromLocalStorage();
+    }
 
     const mealsRef = collection(db, 'meals');
     const q = query(
@@ -162,14 +167,14 @@ export const getAllUserMeals = async (limitCount = 100) => {
       });
     });
 
+    console.log('✅ Loaded', meals.length, 'meals from Firestore');
     return meals;
     
   } catch (error) {
-    console.error('Error fetching all meals:', error);
+    console.error('❌ Error fetching all meals:', error);
     return [];
   }
 };
-
 // Delete meal
 export const deleteMeal = async (mealId) => {
   try {
@@ -424,22 +429,99 @@ export const calculateWeeklyAverage = (meals) => {
     fats: Math.round(totals.fats / days)
   };
 };
+// ================== MIGRATION ==================
 
+// Migrate localStorage meals to Firestore when user logs in
+export const migrateLocalStorageToFirestore = async () => {
+  try {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      console.log('No user logged in, skipping migration');
+      return 0;
+    }
+
+    // Get meals from localStorage
+    const localMeals = getAllMealsFromLocalStorage();
+    
+    if (localMeals.length === 0) {
+      console.log('No meals to migrate');
+      return 0;
+    }
+
+    console.log(`🔄 Migrating ${localMeals.length} meals to Firestore...`);
+
+    // Check which meals are already in Firestore (to avoid duplicates)
+    const mealsRef = collection(db, 'meals');
+    const q = query(mealsRef, where('userId', '==', user.uid));
+    const snapshot = await getDocs(q);
+    
+    const existingTimestamps = new Set();
+    snapshot.forEach(doc => {
+      const timestamp = doc.data().timestamp.toDate().toISOString();
+      existingTimestamps.add(timestamp);
+    });
+
+    // Migrate only meals that don't exist in Firestore
+    let migratedCount = 0;
+    for (const meal of localMeals) {
+      const mealTimestamp = new Date(meal.timestamp).toISOString();
+      
+      // Skip if already in Firestore
+      if (existingTimestamps.has(mealTimestamp)) {
+        console.log('Skipping duplicate:', mealTimestamp);
+        continue;
+      }
+
+      // Add to Firestore
+      const docData = {
+        userId: user.uid,
+        foods: meal.foods,
+        mealType: meal.mealType,
+        totals: meal.totals,
+        timestamp: Timestamp.fromDate(new Date(meal.timestamp)),
+        hasPhoto: meal.hasPhoto || false,
+        createdAt: Timestamp.now(),
+        migratedFromLocalStorage: true
+      };
+
+      await addDoc(mealsRef, docData);
+      migratedCount++;
+    }
+
+    console.log(`✅ Migrated ${migratedCount} meals to Firestore`);
+
+    // Optional: Clear localStorage after successful migration
+    if (migratedCount > 0) {
+      clearLocalStorage();
+      console.log('🗑️ Cleared localStorage after migration');
+    }
+
+    return migratedCount;
+
+  } catch (error) {
+    console.error('❌ Migration error:', error);
+    return 0;
+  }
+};
 // ================== LOCAL STORAGE FALLBACK ==================
 
 const MEALS_STORAGE_KEY = 'caloriesnap_meals';
 
 const saveMealToLocalStorage = (mealData) => {
   try {
-    const meals = getMealsFromLocalStorage();
+    const meals = getAllMealsFromLocalStorage(); // Get all existing meals
+    
     meals.push({
       id: 'local_' + Date.now(),
       ...mealData,
       timestamp: mealData.timestamp.toISOString(),
       createdAt: new Date().toISOString()
     });
+    
     localStorage.setItem(MEALS_STORAGE_KEY, JSON.stringify(meals));
-    console.log('✅ Meal saved to localStorage');
+    console.log('✅ Meal saved to localStorage. Total meals:', meals.length);
   } catch (error) {
     console.error('Error saving to localStorage:', error);
   }
@@ -467,7 +549,25 @@ const getMealsFromLocalStorage = () => {
     return [];
   }
 };
-
+// Get ALL meals from localStorage (not just today)
+const getAllMealsFromLocalStorage = () => {
+  try {
+    const stored = localStorage.getItem(MEALS_STORAGE_KEY);
+    if (!stored) return [];
+    
+    const meals = JSON.parse(stored);
+    
+    // Convert timestamp strings back to Date objects
+    return meals.map(meal => ({
+      ...meal,
+      timestamp: new Date(meal.timestamp)
+    })).sort((a, b) => b.timestamp - a.timestamp); // Sort newest first
+    
+  } catch (error) {
+    console.error('Error reading from localStorage:', error);
+    return [];
+  }
+};
 export const clearLocalStorage = () => {
   localStorage.removeItem(MEALS_STORAGE_KEY);
 };

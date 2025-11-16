@@ -11,7 +11,14 @@ const Navbar = () => {
     return null;
   }
 
-  const navItems = [
+  // Guest navigation (not logged in)
+  const guestNavItems = [
+    { path: '/', icon: Home, label: 'Home' },
+    { path: '/log-meal', icon: Camera, label: 'Log Meal' },
+  ];
+
+  // Logged in navigation
+  const userNavItems = [
     { path: '/', icon: Home, label: 'Home' },
     { path: '/dashboard', icon: TrendingUp, label: 'Dashboard' },
     { path: '/log-meal', icon: Camera, label: 'Log' },
@@ -19,6 +26,7 @@ const Navbar = () => {
     { path: '/profile', icon: User, label: 'Profile' },
   ];
 
+  const navItems = user ? userNavItems : guestNavItems;
   const isActive = (path) => location.pathname === path;
 
   const handleLogout = async () => {
@@ -40,7 +48,7 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {navItems.map((item) => {
-              const Icon = item.icon
+              const Icon = item.icon;
               return (
                 <Link
                   key={item.path}
@@ -81,7 +89,7 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-        <div className="grid grid-cols-5 gap-1 p-2">
+        <div className={`grid gap-1 p-2 ${user ? 'grid-cols-5' : 'grid-cols-3'}`}>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (

@@ -5,7 +5,8 @@ import {
   signOut,
   onAuthStateChanged
 } from 'firebase/auth';
-import { auth } from '../services/firebase/config';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { auth, db } from '../services/firebase/config';
 import { getUserProfile } from '../services/firebase/firestore';
 import toast from 'react-hot-toast';
 
@@ -34,6 +35,18 @@ export const AuthProvider = ({ children }) => {
         try {
           const profile = await getUserProfile(firebaseUser.uid);
           setUserProfile(profile);
+          
+          // Check if we need to migrate localStorage data
+          const localMeals = localStorage.getItem('caloriesnap_meals');
+          if (localMeals) {
+            const meals = JSON.parse(localMeals);
+            if (meals.length > 0) {
+              console.log(`📦 Found ${meals.length} meals in localStorage`);
+
+              // ✅ FIXED: replaced toast.info with toast()
+              toast('Found local meals. Go to Profile to migrate to cloud!');
+            }
+          }
         } catch (error) {
           console.error('Error loading profile:', error);
         }
@@ -61,7 +74,7 @@ export const AuthProvider = ({ children }) => {
         proteinGoal: 150,
         carbsGoal: 250,
         fatsGoal: 65,
-        createdAt: new Date(),
+        createdAt: Timestamp.now(),
         stats: {
           totalMeals: 0,
           currentStreak: 0,
@@ -70,9 +83,6 @@ export const AuthProvider = ({ children }) => {
         }
       };
       
-      // Import setDoc here to avoid circular dependency
-      const { doc, setDoc } = await import('firebase/firestore');
-      const { db } = await import('../services/firebase/config');
       await setDoc(doc(db, 'users', result.user.uid), profileData);
       
       toast.success('Account created successfully! 🎉');
@@ -80,7 +90,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Signup error:', error);
       
-      // User-friendly error messages
       let message = 'Failed to create account';
       if (error.code === 'auth/email-already-in-use') {
         message = 'Email already in use';
@@ -113,6 +122,8 @@ export const AuthProvider = ({ children }) => {
         message = 'Invalid email address';
       } else if (error.code === 'auth/too-many-requests') {
         message = 'Too many attempts. Try again later';
+      } else if (error.code === 'auth/invalid-credential') {
+        message = 'Invalid email or password';
       }
       
       toast.error(message);
@@ -149,3 +160,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

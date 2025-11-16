@@ -6,20 +6,27 @@ import {
   calculateDailyTotals,
   getUserProfile,
   calculateStreak,
-  checkAndAwardBadges
+  checkAndAwardBadges,
+  getMealsByDateRange
 } from '../services/firebase/firestore';
 import { getMealSuggestions } from '../services/api/temp_foodService';
 import { getAuth } from 'firebase/auth';
+import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 import Button from '../components/common/Button';
 import toast from 'react-hot-toast';
+import CalorieChart from '../components/dashboard/CalorieChart';
+import MacrosPieChart from '../components/dashboard/MacrosPieChart';
+import WeeklyProgress from '../components/dashboard/WeeklyProgress';
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [newBadges, setNewBadges] = useState([]);
+  const [chartData, setChartData] = useState([]); // ← MOVED HERE (state variable)
 
   useEffect(() => {
     loadDashboardData();
@@ -36,9 +43,12 @@ const Dashboard = () => {
       const auth = getAuth();
       const user = auth.currentUser;
       
+      let calorieGoal = 2000;
+      
       if (user) {
         const profile = await getUserProfile(user.uid);
         setUserProfile(profile);
+        calorieGoal = profile?.calorieGoal || 2000;
 
         // Check for new badges
         const badges = await checkAndAwardBadges(user.uid);
@@ -51,10 +61,44 @@ const Dashboard = () => {
         setUserProfile({ calorieGoal: 2000 });
       }
 
+      // Load last 7 days for charts
+      const last7Days = new Date();
+      last7Days.setDate(last7Days.getDate() - 7);
+      const weekMeals = await getMealsByDateRange(last7Days, new Date());
+
+      // Group by date for chart
+      const dailyData = {};
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateKey = date.toISOString().split('T')[0];
+        dailyData[dateKey] = { 
+          date: dateKey, 
+          calories: 0, 
+          protein: 0, 
+          carbs: 0, 
+          fats: 0, 
+          goal: calorieGoal 
+        };
+      }
+
+      weekMeals.forEach(meal => {
+        const dateKey = new Date(meal.timestamp).toISOString().split('T')[0];
+        if (dailyData[dateKey]) {
+          dailyData[dateKey].calories += meal.totals?.calories || 0;
+          dailyData[dateKey].protein += meal.totals?.protein || 0;
+          dailyData[dateKey].carbs += meal.totals?.carbs || 0;
+          dailyData[dateKey].fats += meal.totals?.fats || 0;
+        }
+      });
+
+      const formattedChartData = Object.values(dailyData);
+      setChartData(formattedChartData); // ← SET STATE HERE
+
       // Load meal suggestions based on remaining calories
       if (todaysMeals.length > 0) {
         const totals = calculateDailyTotals(todaysMeals);
-        const remaining = 2000 - totals.calories;
+        const remaining = calorieGoal - totals.calories;
         
         if (remaining > 0) {
           const mealSuggestions = getMealSuggestions('dinner', remaining);
@@ -95,6 +139,44 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Guest Mode Warning */}
+      {!user && (
+        <div className="container-custom py-4">
+          <div className="card bg-yellow-50 border-2 border-yellow-300">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⚠️</span>
+              <div className="flex-1">
+                <p className="font-semibold text-yellow-800 mb-2">
+                  You're in Guest Mode
+                </p>
+                <p className="text-sm text-yellow-700 mb-4">
+                  Your data is only saved locally on this device. 
+                  <strong> Create an account</strong> to:
+                </p>
+                <ul className="text-sm text-yellow-700 mb-4 space-y-1 ml-4">
+                  <li>✓ Access history and track progress over time</li>
+                  <li>✓ Sync data across devices</li>
+                  <li>✓ Earn badges and achievements</li>
+                  <li>✓ Never lose your data</li>
+                </ul>
+                <div className="flex gap-2">
+                  <Link to="/signup">
+                    <Button variant="secondary" className="text-sm">
+                      Create Account (Free)
+                    </Button>
+                  </Link>
+                  <Link to="/login">
+                    <Button variant="outline" className="text-sm">
+                      Sign In
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container-custom py-6 space-y-6">
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -119,6 +201,19 @@ const Dashboard = () => {
             <p className="text-sm text-gray-600">Fats</p>
           </div>
         </div>
+
+        {/* Charts Row */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <CalorieChart data={chartData} />
+          <MacrosPieChart 
+            protein={totals.protein} 
+            carbs={totals.carbs} 
+            fats={totals.fats} 
+          />
+        </div>
+
+        {/* Weekly Progress */}
+        <WeeklyProgress weekData={chartData} />
 
         {/* Streak Badge */}
         {streak.current > 0 && (
@@ -292,25 +387,43 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-4">
-          <Link to="/history" className="card hover:shadow-lg transition cursor-pointer text-center">
-            <TrendingUp className="mx-auto mb-2 text-secondary" size={32} />
-            <p className="font-semibold">View History</p>
-            <p className="text-xs text-gray-500 mt-1">See past meals</p>
-          </Link>
-          <Link to="/profile" className="card hover:shadow-lg transition cursor-pointer text-center">
-            <Target className="mx-auto mb-2 text-purple-600" size={32} />
-            <p className="font-semibold">Set Goals</p>
-            <p className="text-xs text-gray-500 mt-1">Customize targets</p>
-          </Link>
-          <div className="card hover:shadow-lg transition cursor-pointer text-center">
-            <Award className="mx-auto mb-2 text-yellow-600" size={32} />
-            <p className="font-semibold">Achievements</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {userProfile?.stats?.badges?.length || 0} badges earned
-            </p>
+        {user ? (
+          <div className="grid md:grid-cols-3 gap-4">
+            <Link to="/history" className="card hover:shadow-lg transition cursor-pointer text-center">
+              <TrendingUp className="mx-auto mb-2 text-secondary" size={32} />
+              <p className="font-semibold">View History</p>
+              <p className="text-xs text-gray-500 mt-1">See past meals</p>
+            </Link>
+            <Link to="/profile" className="card hover:shadow-lg transition cursor-pointer text-center">
+              <Target className="mx-auto mb-2 text-purple-600" size={32} />
+              <p className="font-semibold">Set Goals</p>
+              <p className="text-xs text-gray-500 mt-1">Customize targets</p>
+            </Link>
+            <div className="card hover:shadow-lg transition cursor-pointer text-center">
+              <Award className="mx-auto mb-2 text-yellow-600" size={32} />
+              <p className="font-semibold">Achievements</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {userProfile?.stats?.badges?.length || 0} badges earned
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="card text-center py-8 bg-gradient-to-br from-blue-50 to-purple-50">
+            <span className="text-6xl mb-4 block">🎯</span>
+            <h3 className="text-xl font-bold mb-2">Unlock More Features</h3>
+            <p className="text-gray-600 mb-6">
+              Sign up to access history, achievements, and detailed analytics!
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Link to="/signup">
+                <Button>Create Account</Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="outline">Sign In</Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

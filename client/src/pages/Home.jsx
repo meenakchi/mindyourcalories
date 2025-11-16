@@ -14,7 +14,7 @@ const Home = () => {
             Track your calories effortlessly with AI-powered food recognition. Snap a photo, get instant nutrition data, and achieve your health goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-full sm:w-auto">
-            <button className="bg-red-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-600 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
+            <button className="bg-white text-gray px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-600 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
               <Camera size={24} /> Start Logging
             </button>
             <button className="bg-white text-gray-800 px-8 py-4 rounded-lg text-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all w-full sm:w-auto">
@@ -52,7 +52,7 @@ const Home = () => {
 
 
       {/* Footer */}
-      <footer className="w-full bg-gradient-to-r from-red-400 via-red-500 to-pink-500 text-white py-6 flex justify-center">
+      <footer className="w-full bg-gradient-primary text-white py-6 flex justify-center">
         <div className="max-w-5xl w-full text-center px-8 space-y-10">
           <h2 className="text-5xl font-bold mb-4">Ready to Start Your Journey?</h2>
         </div>
