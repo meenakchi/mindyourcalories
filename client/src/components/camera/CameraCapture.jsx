@@ -72,11 +72,12 @@ const CameraCapture = ({ onCapture, onClose }) => {
             <img
               src={capturedImage}
               alt="Captured"
-              className="w-full h-auto rounded-lg"
+              className="max-h-[70vh] max-w-[90vw] mx-auto object-contain rounded-lg"
             />
           </div>
         ) : (
-          <div className="relative max-w-2xl w-full">
+          <div className="relative max-w-2xl w-full flex justify-center">
+
             <Webcam
               ref={webcamRef}
               screenshotFormat="image/jpeg"
