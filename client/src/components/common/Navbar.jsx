@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Camera, History, User, TrendingUp, LogIn, LogOut } from 'lucide-react';
+import { Home, Camera, History, User, TrendingUp, LogIn, LogOut, Award } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
@@ -18,13 +18,14 @@ const Navbar = () => {
   ];
 
   // Logged in navigation
-  const userNavItems = [
-    { path: '/', icon: Home, label: 'Home' },
-    { path: '/dashboard', icon: TrendingUp, label: 'Dashboard' },
-    { path: '/log-meal', icon: Camera, label: 'Log' },
-    { path: '/history', icon: History, label: 'History' },
-    { path: '/profile', icon: User, label: 'Profile' },
-  ];
+const userNavItems = [
+  { path: '/', icon: Home, label: 'Home' },
+  { path: '/dashboard', icon: TrendingUp, label: 'Dashboard' },
+  { path: '/log-meal', icon: Camera, label: 'Log' },
+  { path: '/history', icon: History, label: 'History' },
+  { path: '/achievements', icon: Award, label: 'Badges' }, // ← ADD THIS
+  { path: '/profile', icon: User, label: 'Profile' },
+];
 
   const navItems = user ? userNavItems : guestNavItems;
   const isActive = (path) => location.pathname === path;

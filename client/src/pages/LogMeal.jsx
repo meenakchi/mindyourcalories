@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, Search, Plus, Loader } from 'lucide-react';
+import { Camera, Search, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CameraCapture from '../components/camera/CameraCapture';
 import FoodCard from '../components/food/FoodCard';
@@ -17,6 +17,7 @@ const LogMeal = () => {
   const [mealType, setMealType] = useState('breakfast');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Handle photo capture
   const handlePhotoCapture = async (imageData) => {
     setIsProcessing(true);
     try {
@@ -37,6 +38,7 @@ const LogMeal = () => {
     }
   };
 
+  // Handle manual search
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       toast.error('Please enter a food name');
@@ -66,55 +68,61 @@ const LogMeal = () => {
     }
   };
 
-  const addFoodToMeal = (food, portion = 1) => {
-    const foodWithPortion = {
+  // Add food to meal
+  const addFoodToMeal = (food) => {
+    const foodWithMetadata = {
       ...food,
-      portion,
-      calories: Math.round(food.calories * portion),
-      protein: Math.round(food.protein * portion),
-      carbs: Math.round(food.carbs * portion),
-      fats: Math.round(food.fats * portion)
+      portion: 1,
+      // Store original values for portion calculations
+      _originalCalories: food.calories,
+      _originalProtein: food.protein,
+      _originalCarbs: food.carbs,
+      _originalFats: food.fats,
     };
     
-    setSelectedFoods([...selectedFoods, foodWithPortion]);
+    setSelectedFoods([...selectedFoods, foodWithMetadata]);
     toast.success(`Added ${food.name}`);
     
-    // Clear search after adding
+    // Clear search results after adding
     setSearchQuery('');
     setRecognizedFoods([]);
   };
 
+  // Remove food from meal
   const removeFoodFromMeal = (index) => {
+    const removedFood = selectedFoods[index];
     const newFoods = selectedFoods.filter((_, i) => i !== index);
     setSelectedFoods(newFoods);
-    toast.success('Food removed');
+    toast.success(`Removed ${removedFood.name}`);
   };
 
+  // Update portion size
   const updatePortion = (index, newPortion) => {
     const newFoods = [...selectedFoods];
     const food = newFoods[index];
-    const originalPortion = food.portion || 1;
-    const baseCals = food.calories / originalPortion;
     
+    // Calculate new values based on original values
     food.portion = newPortion;
-    food.calories = Math.round(baseCals * newPortion);
-    food.protein = Math.round((food.protein / originalPortion) * newPortion);
-    food.carbs = Math.round((food.carbs / originalPortion) * newPortion);
-    food.fats = Math.round((food.fats / originalPortion) * newPortion);
+    food.calories = Math.round(food._originalCalories * newPortion);
+    food.protein = Math.round(food._originalProtein * newPortion);
+    food.carbs = Math.round(food._originalCarbs * newPortion);
+    food.fats = Math.round(food._originalFats * newPortion);
     
     setSelectedFoods(newFoods);
   };
 
+  // Calculate totals
   const totals = selectedFoods.reduce(
     (acc, food) => ({
-      calories: acc.calories + food.calories,
-      protein: acc.protein + food.protein,
-      carbs: acc.carbs + food.carbs,
-      fats: acc.fats + food.fats
+      calories: acc.calories + (food.calories || 0),
+      protein: acc.protein + (food.protein || 0),
+      carbs: acc.carbs + (food.carbs || 0),
+      fats: acc.fats + (food.fats || 0)
     }),
     { calories: 0, protein: 0, carbs: 0, fats: 0 }
   );
 
+  // Save meal
   const saveMeal = async () => {
     if (selectedFoods.length === 0) {
       toast.error('Add at least one food item');
@@ -123,17 +131,29 @@ const LogMeal = () => {
 
     setIsProcessing(true);
     try {
+      // Clean up the foods before saving (remove metadata)
+      const cleanedFoods = selectedFoods.map(food => ({
+        name: food.name,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fats: food.fats,
+        portion: food.portion,
+        serving: food.serving
+      }));
+
       await saveMealToFirestore({
-        foods: selectedFoods,
+        foods: cleanedFoods,
         mealType,
         totals,
-        timestamp: new Date()
+        timestamp: new Date(),
+        hasPhoto: false // TODO: track if photo was used
       });
       
-      toast.success('Meal logged successfully!');
+      toast.success('Meal logged successfully! 🎉');
       navigate('/dashboard');
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error saving meal:', error);
       toast.error('Failed to save meal');
     } finally {
       setIsProcessing(false);
@@ -142,6 +162,7 @@ const LogMeal = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
+      {/* Camera Modal */}
       {showCamera && (
         <CameraCapture
           onCapture={handlePhotoCapture}
@@ -149,6 +170,7 @@ const LogMeal = () => {
         />
       )}
 
+      {/* Header */}
       <div className="bg-gradient-primary shadow-sm">
         <div className="container-custom py-4">
           <h1 className="text-2xl font-bold text-gray-800">Log Meal</h1>
@@ -157,7 +179,7 @@ const LogMeal = () => {
       </div>
 
       <div className="container-custom py-6 space-y-6">
-        {/* Meal Type */}
+        {/* Meal Type Selection */}
         <div className="card">
           <label className="block text-black font-semibold text-gray-700 mb-3">
             Meal Type
@@ -181,15 +203,19 @@ const LogMeal = () => {
 
         {/* Input Methods */}
         <div className="grid md:grid-cols-2 gap-4">
+          {/* Camera Button */}
           <button
             onClick={() => setShowCamera(true)}
-            className="card hover:shadow-lg transition flex flex-col items-center justify-center py-8 bg-gradient-secondary text-black cursor-pointer"
+            disabled={isProcessing}
+            className="card hover:shadow-lg transition flex flex-col items-center justify-center py-8 bg-gradient-secondary text-white cursor-pointer disabled:opacity-50"
           >
             <Camera size={48} className="mb-3" />
             <span className="text-lg font-semibold">Take Photo</span>
+            <span className="text-sm opacity-90 mt-1">AI Recognition</span>
           </button>
 
-          <div className="card bg-gradient-secondary text-black">
+          {/* Manual Search */}
+          <div className="card bg-gradient-secondary text-white">
             <div className="flex flex-col h-full justify-center">
               <Search size={48} className="mb-3 mx-auto" />
               <span className="text-lg font-semibold text-center mb-4">
@@ -201,64 +227,78 @@ const LogMeal = () => {
                   placeholder="e.g., chicken breast"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="flex-1 px-4 py-2 rounded-lg text-gray-800 placeholder-gray-400"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  disabled={isProcessing}
+                  className="flex-1 px-4 py-2 rounded-lg text-gray-800 placeholder-gray-400 disabled:opacity-50"
                 />
-           <Button 
-  onClick={handleSearch} 
-  isLoading={isProcessing}
-  disabled={!searchQuery.trim()}
-  className="!bg-gray-200 hover:!bg-gray-300 !text-black border border-gray-400 transition-colors duration-200"
->
-  Go
-</Button>
-
+                <Button 
+                  onClick={handleSearch} 
+                  isLoading={isProcessing}
+                  disabled={!searchQuery.trim() || isProcessing}
+                  className="bg-white text-secondary hover:bg-gray-100"
+                >
+                  Go
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Processing */}
+        {/* Processing Indicator */}
         {isProcessing && (
           <div className="card text-center py-8">
             <div className="spinner mx-auto mb-4"></div>
-            <p className="text-gray-600">Processing...</p>
+            <p className="text-gray-600">Processing your request...</p>
           </div>
         )}
 
-        {/* Recognized Foods */}
+        {/* Search Results / Recognized Foods */}
         {recognizedFoods.length > 0 && !isProcessing && (
-          <div className="card">
-            <h3 className="text-lg font-semibold mb-4">
-              Found {recognizedFoods.length} Food{recognizedFoods.length !== 1 ? 's' : ''}
-            </h3>
+          <div className="card animate-fade-in">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">
+                Found {recognizedFoods.length} Food{recognizedFoods.length !== 1 ? 's' : ''}
+              </h3>
+              <button
+                onClick={() => setRecognizedFoods([])}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Clear
+              </button>
+            </div>
             <div className="space-y-3">
               {recognizedFoods.map((food, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition group"
                 >
                   <div className="flex-1">
-                    <p className="font-semibold text-lg">{food.name}</p>
-                    <div className="flex gap-4 mt-2 text-sm text-gray-600">
+                    <p className="font-semibold text-lg text-gray-900">{food.name}</p>
+                    <div className="flex flex-wrap gap-3 mt-2 text-sm">
                       <span className="font-medium text-primary">{food.calories} cal</span>
-                      <span>{food.protein}g protein</span>
-                      <span>{food.carbs}g carbs</span>
-                      <span>{food.fats}g fats</span>
+                      <span className="text-blue-600">{food.protein}g protein</span>
+                      <span className="text-yellow-600">{food.carbs}g carbs</span>
+                      <span className="text-green-600">{food.fats}g fats</span>
                     </div>
                     {food.serving && (
-                      <p className="text-xs text-gray-500 mt-1">Serving: {food.serving}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Per {food.serving}
+                      </p>
                     )}
                     {food.confidence && (
                       <span className="inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                        {food.confidence}% match
+                        {food.confidence}% confidence
                       </span>
                     )}
                   </div>
                   <button
                     onClick={() => addFoodToMeal(food)}
-                    className="p-3 bg-primary text-white rounded-full hover:bg-red-600 transition ml-4 flex-shrink-0"
-                    title="Add to meal"
+                    className="p-3 bg-primary text-black rounded-full hover:bg-red-600 hover:scale-110 transition ml-4 flex-shrink-0 group-hover:shadow-lg"
+                    title={`Add ${food.name}`}
                   >
                     <Plus size={24} />
                   </button>
@@ -273,18 +313,24 @@ const LogMeal = () => {
           <div className="card text-center py-8 bg-gray-50">
             <span className="text-4xl mb-3 block">🔍</span>
             <p className="text-gray-600">No results for "{searchQuery}"</p>
-            <p className="text-sm text-gray-500 mt-2">Try a different search term</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Try searching for: chicken, rice, apple, etc.
+            </p>
           </div>
         )}
 
-        {/* Selected Foods */}
+        {/* Selected Foods - Your Meal */}
         {selectedFoods.length > 0 && (
-          <div className="card border-2 border-primary">
+          <div className="card border-2 border-primary animate-fade-in">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <span>🍽️</span>
-              Your Meal ({selectedFoods.length} item{selectedFoods.length !== 1 ? 's' : ''})
+              <span className="text-2xl">🍽️</span>
+              Your {mealType.charAt(0).toUpperCase() + mealType.slice(1)}
+              <span className="text-sm font-normal text-gray-500 ml-2">
+                ({selectedFoods.length} item{selectedFoods.length !== 1 ? 's' : ''})
+              </span>
             </h3>
-            <div className="space-y-4">
+            
+            <div className="space-y-4 mb-6">
               {selectedFoods.map((food, index) => (
                 <FoodCard
                   key={index}
@@ -295,53 +341,68 @@ const LogMeal = () => {
               ))}
             </div>
 
-            {/* Totals */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h4 className="font-semibold mb-4">Meal Totals</h4>
+            {/* Meal Totals */}
+            <div className="pt-6 border-t-2 border-gray-200">
+              <h4 className="font-semibold mb-4 text-lg">Meal Totals</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-red-50 rounded-lg">
+                <div className="text-center p-4 bg-red-50 rounded-lg border border-red-100">
                   <p className="text-3xl font-bold text-primary">{totals.calories}</p>
-                  <p className="text-sm text-gray-600">Calories</p>
+                  <p className="text-sm text-gray-600 mt-1">Calories</p>
                 </div>
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-100">
                   <p className="text-3xl font-bold text-blue-600">{totals.protein}g</p>
-                  <p className="text-sm text-gray-600">Protein</p>
+                  <p className="text-sm text-gray-600 mt-1">Protein</p>
                 </div>
-                <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-100">
                   <p className="text-3xl font-bold text-yellow-600">{totals.carbs}g</p>
-                  <p className="text-sm text-gray-600">Carbs</p>
+                  <p className="text-sm text-gray-600 mt-1">Carbs</p>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-center p-4 bg-green-50 rounded-lg border border-green-100">
                   <p className="text-3xl font-bold text-green-600">{totals.fats}g</p>
-                  <p className="text-sm text-gray-600">Fats</p>
+                  <p className="text-sm text-gray-600 mt-1">Fats</p>
                 </div>
               </div>
 
-              <Button
-                onClick={saveMeal}
-                isLoading={isProcessing}
-                className="w-full py-4 text-lg"
-              >
-                {isProcessing ? 'Saving...' : `Save ${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`}
-              </Button>
+<Button
+  onClick={saveMeal}
+  isLoading={isProcessing}
+  className="w-full py-4 text-lg font-semibold bg-blue-500 text-white hover:bg-blue-600"
+>
+  {isProcessing ? (
+    'Saving...'
+  ) : (
+    <>
+      Save {mealType.charAt(0).toUpperCase() + mealType.slice(1)} ({totals.calories} cal)
+    </>
+  )}
+</Button>
+
             </div>
           </div>
         )}
 
-        {/* Empty State */}
-        {selectedFoods.length === 0 && recognizedFoods.length === 0 && !isProcessing && (
+        {/* Empty State - When Nothing Added */}
+        {selectedFoods.length === 0 && recognizedFoods.length === 0 && !isProcessing && !searchQuery && (
           <div className="card text-center py-12 bg-gradient-to-br from-gray-50 to-white">
             <span className="text-6xl mb-4 block">🍴</span>
-            <h3 className="text-xl font-semibold mb-2">Ready to Log Your Meal?</h3>
-            <p className="text-gray-600 mb-4">
-              Take a photo or search for foods to get started
+            <h3 className="text-xl font-semibold mb-2 text-gray-800">
+              Ready to Log Your Meals ?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Choose a method above to get started
             </p>
-            <div className="flex gap-3 justify-center text-sm text-gray-500">
-              <span>📸 Photo recognition</span>
+            <div className="flex flex-wrap gap-4 justify-center text-sm text-gray-500">
+              <span className="flex items-center gap-2">
+                <Camera size={16} />
+                Photo Recognition
+              </span>
               <span>•</span>
-              <span>🔍 Manual search</span>
+              <span className="flex items-center gap-2">
+                <Search size={16} />
+                Manual Search
+              </span>
               <span>•</span>
-              <span>📊 Instant nutrition data</span>
+              <span>📊 Instant Nutrition</span>
             </div>
           </div>
         )}

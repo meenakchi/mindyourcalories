@@ -10,7 +10,7 @@ import History from './pages/History';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-
+import Achievements from './pages/Achievements';
 
 function App() {
   return (
@@ -29,6 +29,7 @@ function App() {
             <Route path="/log-meal" element={<LogMeal />} />
             <Route path="/history" element={<History />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/achievements" element={<Achievements />} />
           </Routes>
           <Toaster 
             position="top-right"
