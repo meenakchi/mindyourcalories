@@ -7,6 +7,7 @@ import FoodCard from '../components/food/FoodCard';
 import Button from '../components/common/Button';
 import { analyzeMealImage, searchFood } from '../services/api/temp_foodService';
 import { saveMealToFirestore } from '../services/firebase/firestore';
+import Navbar from '../components/common/Navbar';
 
 const LogMeal = () => {
   const navigate = useNavigate();
@@ -162,6 +163,8 @@ const LogMeal = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
+      {/* Add Navbar at the top */}
+    <Navbar totals={totals} mealType={mealType} />
       {/* Camera Modal */}
       {showCamera && (
         <CameraCapture
