@@ -1,0 +1,9 @@
+15f8e4e main@{0}: commit (merge): Merge branch 'main' of https://github.com/meenakchi/mindyourcalories
+f8b420f main@{1}: commit: new feature
+51eef9f main@{2}: commit: commit7-debugging adding new features
+0b85e17 main@{3}: commit: commit6
+94db06a main@{4}: commit: fixed styling and logging meals
+e0cb99a main@{5}: commit: commit4
+c450629 main@{6}: commit: commit3
+24b0ae3 main@{7}: commit: setuppart2
+fd2fa99 main@{8}: commit (initial): setup

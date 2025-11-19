@@ -163,8 +163,6 @@ const LogMeal = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
-      {/* Add Navbar at the top */}
-    <Navbar totals={totals} mealType={mealType} />
       {/* Camera Modal */}
       {showCamera && (
         <CameraCapture
