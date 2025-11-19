@@ -125,19 +125,20 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
-      {/* Header */}
-      <div className="bg-gradient-primary text-white">
-        <div className="container-custom py-6">
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="opacity-90">
-            {meals.length > 0 
-              ? `You've logged ${meals.length} meal${meals.length > 1 ? 's' : ''} today!`
-              : 'Ready to log your first meal?'
-            }
-          </p>
-        </div>
+  <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
+    {/* Header */}
+    <div className="bg-gradient-primary text-white mb-6">  
+      <div className="container-custom py-6">
+        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+        <p className="opacity-90">
+          {meals.length > 0 
+            ? `You've logged ${meals.length} meal${meals.length > 1 ? 's' : ''} today!`
+            : 'Ready to log your first meal?'
+          }
+        </p>
       </div>
+    </div>
+
 
       {/* Guest Mode Warning */}
       {!user && (

@@ -29,7 +29,6 @@ const History = () => {
     try {
       let allMeals = await getAllUserMeals(200);
       
-      // Apply date filter
       if (filter === 'week') {
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
@@ -42,8 +41,7 @@ const History = () => {
       
       setMeals(allMeals);
       setGroupedMeals(groupMealsByDate(allMeals));
-      
-      // Calculate weekly average
+
       const avg = calculateWeeklyAverage(allMeals);
       setWeeklyAvg(avg);
       
@@ -110,11 +108,10 @@ const History = () => {
     toast.success('Exported to CSV!');
   };
 
-  // Filter meals by search and meal type
   const filteredGroupedMeals = {};
   Object.keys(groupedMeals).forEach(date => {
     const dayMeals = groupedMeals[date].filter(meal => {
-      const matchesSearch = searchQuery === '' || 
+      const matchesSearch = !searchQuery || 
         meal.foods.some(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesMealType = mealTypeFilter === 'all' || meal.mealType === mealTypeFilter;
       return matchesSearch && matchesMealType;
@@ -135,11 +132,12 @@ const History = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
-      {/* Header */}
-      <div className="bg-gradient-primary text-white">
+
+      {/* HEADER WITH FIXED SPACING */}
+      <div className="bg-gradient-primary text-white mb-6">
         <div className="container-custom py-6">
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Calendar size={32} />
+            
             History
           </h1>
           <p className="opacity-90 mt-2">
@@ -149,7 +147,7 @@ const History = () => {
       </div>
 
       <div className="container-custom py-6 space-y-6">
-        {/* Weekly Stats */}
+
         {weeklyAvg && (
           <div className="card text-black">
             <div className="flex items-center gap-2 mb-4">
@@ -179,7 +177,6 @@ const History = () => {
 
         {/* Filters */}
         <div className="card space-y-4">
-          {/* Date Filter */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Filter size={20} />
@@ -202,7 +199,6 @@ const History = () => {
             </div>
           </div>
 
-          {/* Meal Type Filter */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <span className="font-semibold">Meal Type:</span>
@@ -224,7 +220,6 @@ const History = () => {
             </div>
           </div>
 
-          {/* Search */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Search size={20} />
@@ -239,7 +234,6 @@ const History = () => {
             />
           </div>
 
-          {/* Export Button */}
           <Button onClick={exportToCSV} variant="outline" className="w-full md:w-auto">
             <Download size={18} />
             Export to CSV
@@ -261,7 +255,6 @@ const History = () => {
             </p>
           </div>
         ) : (
-          /* Meals by Date */
           <div className="space-y-6">
             {sortedDates.map((date) => {
               const dayMeals = filteredGroupedMeals[date];
@@ -269,7 +262,6 @@ const History = () => {
 
               return (
                 <div key={date} className="card">
-                  {/* Date Header */}
                   <div className="flex items-center justify-between mb-4 pb-4 border-b">
                     <div>
                       <h3 className="text-xl font-bold">{formatDate(date)}</h3>
@@ -287,7 +279,6 @@ const History = () => {
                     </div>
                   </div>
 
-                  {/* Meals List */}
                   <div className="space-y-3">
                     {dayMeals.map((meal) => (
                       <div
@@ -314,7 +305,6 @@ const History = () => {
                               </div>
                             </div>
 
-                            {/* Nutrition */}
                             <div className="grid grid-cols-4 gap-2 text-center text-sm mb-2">
                               <div className="p-2 bg-white rounded">
                                 <p className="font-bold text-primary">{meal.totals.calories}</p>
@@ -334,13 +324,11 @@ const History = () => {
                               </div>
                             </div>
 
-                            {/* Foods */}
                             <div className="text-sm text-gray-700">
                               <strong>Foods:</strong> {meal.foods?.map(f => f.name).join(', ')}
                             </div>
                           </div>
 
-                          {/* Delete Button */}
                           <button
                             onClick={() => handleDeleteMeal(meal.id)}
                             className="p-2 text-red-500 hover:bg-red-50 rounded-full transition ml-4"

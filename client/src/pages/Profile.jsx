@@ -49,23 +49,22 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
       {/* Header */}
-      <div className="bg-gradient-primary text-white">
-        <div className="container-custom p-10">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-4xl">
-              👤
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">
-                {user ? userProfile?.name || user.email : 'Guest User'}
-              </h1>
-              <p className="opacity-90">
-                {user ? user.email : 'Using app without account'}
-              </p>
-            </div>
-          </div>
-        </div>
+<div className="bg-gradient-primary text-white mb-6">
+  <div className="container-custom p-10">
+    <div className="flex items-center gap-4">
+      
+      <div>
+        <h1 className="text-2xl font-bold">
+          {user ? userProfile?.name || user.email : 'Guest User'}
+        </h1>
+        <p className="opacity-90">
+          {user ? user.email : 'Using app without account'}
+        </p>
       </div>
+    </div>
+  </div>
+</div>
+
 
       <div className="container-custom py-6 space-y-6">
         {/* Not Logged In Warning */}

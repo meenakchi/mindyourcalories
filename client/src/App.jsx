@@ -45,6 +45,7 @@ function AppContent() {
 }
 
 
+
 function App() {
   return (
     <AuthProvider>
@@ -57,7 +58,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
-            {/* Protected Routes (optional auth - works without login) */}
+            {/* Protected Routes */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/log-meal" element={<LogMeal />} />
             <Route path="/history" element={<History />} />

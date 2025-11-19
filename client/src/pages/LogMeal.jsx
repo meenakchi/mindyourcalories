@@ -172,10 +172,10 @@ const LogMeal = () => {
       )}
 
       {/* Header */}
-      <div className="bg-gradient-primary shadow-sm">
+      <div className="bg-gradient-primary text-white mb-6">
         <div className="container-custom py-4">
-          <h1 className="text-2xl font-bold text-gray-800">Log Meal</h1>
-          <p className="text-gray-600 mt-1">Snap a photo or search manually</p>
+          <h1 className="text-2xl font-bold">Log Meal</h1>
+          <p className=" mt-1">Snap a photo or search manually</p>
         </div>
       </div>
 

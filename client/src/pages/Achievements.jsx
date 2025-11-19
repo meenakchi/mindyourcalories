@@ -39,7 +39,7 @@ const Achievements = () => {
   // Check if not logged in
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
+      <div className="min-h-screen bg-gray-50 pb-24 md:pb-6 pt-4">
         <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
           <div className="container-custom py-6">
             <h1 className="text-3xl font-bold">Achievements</h1>
@@ -141,30 +141,31 @@ const Achievements = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
+    <div className="min-h-screen bg-gray-50 pb-24 md:pb-6 pt-4">
       {/* Header */}
-      <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
-        <div className="container-custom py-8">
-          <div className="flex items-center gap-3 mb-4">
-            <Award size={40} />
-            <div>
-              <h1 className="text-3xl font-bold">Achievements</h1>
-              <p className="opacity-90">
-                {earnedCount} of {totalCount} badges earned
-              </p>
-            </div>
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="bg-white/20 rounded-full h-4 overflow-hidden">
-            <div 
-              className="bg-white h-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            ></div>
-          </div>
-          <p className="text-sm opacity-90 mt-2 text-right">{progressPercent}% Complete</p>
-        </div>
+<div className="bg-gradient-primary text-white mb-6">
+  <div className="container-custom py-8">
+    <div className="flex items-center gap-3 mb-4">
+     
+      <div>
+        <h1 className="text-3xl font-bold">Achievements</h1>
+        <p className="opacity-90">
+          {earnedCount} of {totalCount} badges earned
+        </p>
       </div>
+    </div>
+
+    {/* Progress Bar */}
+    <div className="bg-white/20 rounded-full h-4 overflow-hidden">
+      <div 
+        className="bg-white h-full transition-all duration-500"
+        style={{ width: `${progressPercent}%` }}
+      ></div>
+    </div>
+    <p className="text-sm opacity-90 mt-2 text-right">{progressPercent}% Complete</p>
+  </div>
+</div>
+
 
       <div className="container-custom py-6 space-y-6">
         {/* Stats Overview */}
