@@ -44,27 +44,12 @@ function AppContent() {
   );
 }
 
-
-
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-gray-50">
-         <AppContent />
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/log-meal" element={<LogMeal />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/achievements" element={<Achievements />} />
-          </Routes>
+          <AppContent />
           <Toaster 
             position="top-right"
             toastOptions={{
@@ -81,4 +66,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

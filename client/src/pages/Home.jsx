@@ -13,14 +13,6 @@ const Home = () => {
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl">
             Track your calories effortlessly with AI-powered food recognition. Snap a photo, get instant nutrition data, and achieve your health goals.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-full sm:w-auto">
-            <button className="bg-white text-gray px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-600 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
-              <Camera size={24} /> Start Logging
-            </button>
-            <button className="bg-white text-gray-800 px-8 py-4 rounded-lg text-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all w-full sm:w-auto">
-              View Dashboard
-            </button>
-          </div>
         </section>
 
 
