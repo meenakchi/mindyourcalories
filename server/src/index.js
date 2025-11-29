@@ -30,14 +30,30 @@ app.use(
         connectSrc: [
           "'self'",
           "https://identitytoolkit.googleapis.com",
+          "https://firestore.googleapis.com",
           "https://www.googleapis.com",
+          "https://clari*.clarifai.com",
+          "https://api.nal.usda.gov",
+          "data:"
         ],
-        scriptSrc: ["'self'", "https://www.gstatic.com", "https://www.googleapis.com"],
-        imgSrc: ["'self'", "data:", "https://*.cloudinary.com"], // ✅ allow data: URLs for base64 previews
-        styleSrc: ["'self'", "'unsafe-inline'"], // if you use inline styles
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'", // sometimes needed for Vite
+          "https://www.gstatic.com",
+          "https://www.googleapis.com",
+          "https://apis.google.com"
+        ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://*.cloudinary.com",
+          "https://www.google.com"
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
         fontSrc: ["'self'"]
       },
     },
+    crossOriginEmbedderPolicy: false, // Firebase might need this for base64
   })
 );
 
