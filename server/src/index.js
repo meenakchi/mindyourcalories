@@ -21,31 +21,26 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://www.gstatic.com",
-          "https://www.googleapis.com"
-        ],
         connectSrc: [
           "'self'",
           "https://identitytoolkit.googleapis.com",
-          "https://securetoken.googleapis.com",
-          "https://firestore.googleapis.com",
-          "https://www.googleapis.com"
+          "https://www.googleapis.com",
         ],
-        imgSrc: ["'self'", "data:", "https://*.firebaseio.com", "https://firebasestorage.googleapis.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        scriptSrc: ["'self'", "https://www.gstatic.com", "https://www.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https://*.cloudinary.com"], // ✅ allow data: URLs for base64 previews
+        styleSrc: ["'self'", "'unsafe-inline'"], // if you use inline styles
+        fontSrc: ["'self'"]
       },
     },
   })
 );
+
 
 // Health check
 app.get('/health', (req, res) => {
