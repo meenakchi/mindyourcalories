@@ -43,9 +43,10 @@ const clientDistPath = path.join(__dirname, '../../client/dist');
 app.use(express.static(clientDistPath));
 
 // Catch-all → send React index.html
-app.all('/*', (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(clientDistPath, 'index.html'));
 });
+
 
 // ❌ PUT THIS AFTER FRONTEND — otherwise React breaks
 // 404 handler
