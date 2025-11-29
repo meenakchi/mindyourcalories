@@ -10,7 +10,6 @@ const CalorieForecast = ({ pastTotals, userProfile }) => {
   const days = {};
 
   pastTotals.forEach(meal => {
-    // use meal.timestamp, not createdAt
     const ts = meal.timestamp?.toDate ? meal.timestamp.toDate() : new Date(meal.timestamp);
     const dayKey = ts.toISOString().split("T")[0]; // YYYY-MM-DD
 

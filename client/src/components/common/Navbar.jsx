@@ -13,8 +13,7 @@ const Navbar = ({ meals, userProfile }) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
 
   if (location.pathname === '/login' || location.pathname === '/signup') return null;
-
-  // Removed dashboard from desktop main navigation
+  
   const mainNavItems = user
     ? [
         { path: '/', icon: Home, label: 'Home' },

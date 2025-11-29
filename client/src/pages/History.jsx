@@ -133,7 +133,7 @@ const History = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-6">
 
-      {/* HEADER WITH FIXED SPACING */}
+      {/* HEADER */}
       <div className="bg-gradient-primary text-white mb-6">
         <div className="container-custom py-6">
           <h1 className="text-3xl font-bold flex items-center gap-2">
